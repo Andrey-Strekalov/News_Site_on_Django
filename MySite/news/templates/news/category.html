@@ -1,22 +1,14 @@
 {% extends 'news/index.html' %}
+{% load news_tags%}
 
 {% block title %}
-{{title}}{{category.title}}
+{{title}}
+{{category.title}}
 
 {% endblock %}
 
 {% block sidebar %}
-    <h1> {{category.title}} </h1>
-<div class="col-md-3">
-            <div class="list-group">
-                {% for item in categories%}
-                <a href="{% url 'category' item.pk %}" class="list-group-item list-group-item-action active" aria-current="true">{{item.title}}</a>
-                {%endfor%}
-            </div>
-        </div>
-
-
-
+{%include 'inc/_sidebar.html'%}
 {% endblock %}
 
 
