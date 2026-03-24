@@ -1,49 +1,47 @@
 {% extends 'base.html' %}
+{% load news_tags%}
 
 {% block title %}
-{{title}} :: {{block.super}}
-{% endblock %}
+{{ title }} :: {{ block.super }}
+{%endblock %}
 
 {% block sidebar %}
-<div class="col-md-3">
-            <div class="list-group">
-                {% for item in categories%}
-                <a href="{% url 'category' item.pk %}" class="list-group-item list-group-item-action active" aria-current="true">{{item.title}}</a>
-                {%endfor%}
-            </div>
-        </div>
+{%include 'inc/_sidebar.html'%}
 {% endblock %}
+
 {% block content %}
- <div class="col-md-9">
-            {% for item in news %}
-            <div class="card mb-3">
-                <div class="card-header">
-                    {{forloop.counter}}
-                    {{item.my_func}}
-                    Категория <a href="{% url 'category' item.category.pk %}">{{item.category}}</a>>
-                </div>
-
-                <div class="card-body">
-                    <div class="media" style="display: flex; gap: 50px; align-items: center;">
-                        {% if item.photo %}
-                        <img src="{{ item.photo.url }}" alt="" width="350" class="mr-3">
-                        {% else %}
-                        <img src="https://picsum.photos/id/1060/350/235/?blur=2" alt="" class="mr-3">
-                        {% endif %}
-                        <div class="media-body">
-                            <h5 class="card-title {% cycle 'text-danger' 'text-success' %}">{{ item.title }}</h5>
-                            <p class="card-text">{{item.content|safe|linebreaks|truncatewords:50 }}</p>
-                            <a href="#" class="btn btn-primary">Read
-                                more...</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer text-muted">
-                    {{item.created_at|date:"Y-m-d H:i:s"}}
-                </div>
-            </div>
-            {%endfor%}
-        </div>
-
-{% endblock %}
-
+    {% for item in news %}
+<div class="card mb-3">
+  <div class="card-header">
+    Категория:
+    <a
+      href="{% url 'category'
+item.category.pk %}"
+      >{{ item.category }}</a
+    >
+  </div>
+  <div class="card-body">
+    <div class="media">
+      {% if item.photo %}
+      <img src="{{ item.photo.url }}" alt="" width="350" class="mr-3" />
+      {% else %}
+      <img
+        src="https://picsum.photos/id/1060/350/235/?blur=2"
+        alt=""
+        class="mr-3"
+      />
+      {% endif %}
+      <div class="media-body">
+        <h5 class="card-title">{{ item.title }}</h5>
+        <p class="card-text">
+          {{ item.content|safe|linebreaks|truncatewords:50 }}
+        </p>
+        <a href="#" class="btn btnprimary">Read more...</a>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-muted">
+    {{ item.created_at|date:"Y-m-d H:i:s" }}
+  </div>
+</div>
+{% endfor %} {% endblock %}
