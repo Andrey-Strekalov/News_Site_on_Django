@@ -211,3 +211,24 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# База данных SQLite
+*.sqlite3
+db.sqlite3
+
+# Статика, собранная collectstatic
+static/
+media/
+
+# Временные файлы IDE и OS
+.vs/
+.vscode/
+__pycache__/
+*.pyc
+
+# Файлы Bootstrap (если решили не хранить)
+# bootstrap-5.3.8-dist/
+
+# Админка Django (собранная статика)
+admin/
