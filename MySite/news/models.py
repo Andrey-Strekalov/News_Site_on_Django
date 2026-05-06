@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 
 class Category (models.Model):
     title = models.CharField(max_length=150,
@@ -7,10 +9,15 @@ class Category (models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse('category', kwargs={'category_id': self.pk})
+
+
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
         ordering = ['title']
+
 
 class News(models.Model):
     title=models.CharField(max_length=150, verbose_name='Наименование')
@@ -26,6 +33,9 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('view_news', kwargs={'news_id': self.pk})
 
     class Meta:
         verbose_name='Новость'
