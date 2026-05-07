@@ -1,7 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 
+from . import forms
 from  .models import News, Category
+from .forms import NewsForm
 
 # Create your views here.
 
@@ -36,11 +38,15 @@ def view_news(request, news_id):
     news_item = get_object_or_404(News, pk=news_id)
     return render(request, 'news/view_news.html', {"news_item": news_item})
 
-def test(request):
-    return HttpResponse('<h1>Тестовая страница</h1>'
-                        '<p>Тестовый абзац</p>')
+def add_news(request):
+    if request.method == 'POST':
+        form = NewsForm(request.POST)
+        if form.is_valid():
+            news = form.save()
+            return redirect(news)
+    else:
+        form = NewsForm()
 
-def test2(request):
-    return HttpResponse('<h1 style="font-size: 100px">Тестовая страница 2</h1>')
+    return render(request, 'news/add_news.html', {'form': form})
 
 
