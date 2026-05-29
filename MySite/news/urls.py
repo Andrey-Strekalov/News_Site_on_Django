@@ -8,5 +8,5 @@ urlpatterns = [
          name='category'),
     path('news/<int:pk>/', ViewsNews.as_view(), name='view_news'),
     path('news/add-news', CreateNews.as_view(), name='add_news'),
-path('news/<int:pk>/delete/', DeleteNews.as_view(), name='delete_news'),
+    path('news/<int:pk>/delete/', DeleteNews.as_view(), name='delete_news'),
 ]

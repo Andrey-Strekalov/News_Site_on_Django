@@ -26,7 +26,8 @@ class News(models.Model):
     updated_at=models.DateTimeField(auto_now=True, verbose_name='Обновлено')
     photo=models.ImageField(upload_to='photos/%Y/%m/%d', verbose_name='Изображение', blank=True)
     is_published=models.BooleanField(default=True, verbose_name='Опубкликовано')
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, verbose_name="Категория", related_name='news')
+    views = models.IntegerField(default=0)
 
     def my_func(self):
         return 'Последние новости'
@@ -42,4 +43,19 @@ class News(models.Model):
         verbose_name_plural='Новости'
         ordering=['-created_at']
 
+
+class Comment(models.Model):
+    author=models.CharField(max_length=150, verbose_name='Автор')
+    content=models.TextField(verbose_name='Текст')
+    rating=models.IntegerField(default=0, verbose_name='Рейтинг')
+    created_at=models.DateTimeField(auto_now_add=True, verbose_name='Дата')
+    news=models.ForeignKey(News, on_delete=models.CASCADE, related_name='comments', verbose_name='Новость')
+
+    def __str__(self):
+        return f'{self.author}: {self.content[:20]}'
+
+    class Meta:
+        verbose_name='Комментарий'
+        verbose_name_plural='Комментарии'
+        ordering=['-created_at']
 

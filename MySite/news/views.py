@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import F
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.urls import reverse_lazy
 
-from  .models import News, Category
+from .models import News, Category
 from .forms import NewsForm
 
 
@@ -22,6 +22,11 @@ class HomeViews(ListView):
 class ViewsNews(DetailView):
     model = News
     context_object_name = 'news_item'
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        News.objects.filter(pk=kwargs['pk']).update(views=F('views') + 1)
+        return response
 
 class NewsByCategory(ListView):
     model = News
