@@ -1,5 +1,6 @@
 <!doctype html>
-{% load static%}
+{% load static %}
+{% load cache %}
 <html lang="ru">
 <head>
     <!-- Required meta tags -->
@@ -24,9 +25,9 @@
 
         <div class="col-md-3">
             {% block sidebar %}
-
+            {% cache 40 sidebar %}
             {% include 'inc/_sidebar.html' %}
-
+            {% endcache %}
             {% endblock %}
         </div>
 
@@ -72,5 +73,7 @@
 <!--        crossorigin="anonymous"></script>-->
 
     <link rel="stylesheet" href="{% static 'bootstrap/js/bootstrap.min.js' %}">
+    <!-- MathJax — рендеринг LaTeX-формул из CKEditor (индивидуальное задание) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS_HTML" async></script>
 </body>
 </html>

@@ -1,12 +1,15 @@
+import random
+
 from django.db.models import F, Count
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
+from .forms import NewsForm, ContactForm, ContactFormPuzzle
 from .models import News, Category
-from .forms import NewsForm
 from .utils import MyMixin, RelatedObjectsCountMixin
 
 
@@ -22,6 +25,56 @@ def home(request):
         'news': page_obj,
         'page_obj': page_obj,
         'title': 'Главная страница',
+    })
+
+
+# ─── Форма обратной связи (общее задание) ─────────────────────────────────────
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            return redirect('home')
+    else:
+        form = ContactForm()
+    return render(request, 'news/contact.html', {'form': form, 'title': 'Обратная связь'})
+
+
+# ─── Капча-пазл (индивидуальное задание, вариант 11) ─────────────────────────
+_PUZZLE_CHOICES = [
+    ('🐱 Кот',    0),
+    ('🐶 Собака', 1),
+    ('🐸 Лягушка', 2),
+    ('🦊 Лиса',  3),
+]
+
+def contact_puzzle(request):
+    """Страница с капчей-пазлом: 4 изображения-фрагмента, нужно выбрать правильный."""
+    choices_labels = [c[0] for c in _PUZZLE_CHOICES]
+
+    if request.method == 'POST':
+        correct_idx = request.session.get('puzzle_answer')
+        form = ContactFormPuzzle(
+            request.POST,
+            puzzle_correct=correct_idx,
+            puzzle_choices=choices_labels,
+        )
+        if form.is_valid():
+            del request.session['puzzle_answer']
+            return redirect('home')
+    else:
+        correct_idx = random.randint(0, len(_PUZZLE_CHOICES) - 1)
+        request.session['puzzle_answer'] = correct_idx
+        form = ContactFormPuzzle(
+            puzzle_correct=correct_idx,
+            puzzle_choices=choices_labels,
+        )
+
+    correct_idx = request.session.get('puzzle_answer', 0)
+    return render(request, 'news/contact_puzzle.html', {
+        'form': form,
+        'title': 'Обратная связь (пазл-капча)',
+        'choices': choices_labels,
+        'correct_idx': correct_idx,
     })
 
 

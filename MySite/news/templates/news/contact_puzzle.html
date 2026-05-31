@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Обратная связь — пазл-капча{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+<p class="text-muted">Индивидуальное задание (вариант 11): капча на основе решения пазла.</p>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">{{ form.subject.label }}</label>
+        {{ form.subject }}
+        {% if form.subject.errors %}
+        <div class="text-danger">{{ form.subject.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">{{ form.content.label }}</label>
+        {{ form.content }}
+        {% if form.content.errors %}
+        <div class="text-danger">{{ form.content.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Пазл-капча: визуальные фрагменты -->
+    <div class="mb-3 border rounded p-3 bg-light">
+        <p class="fw-bold">🧩 Пазл-капча</p>
+        <p>На картинке не хватает одного фрагмента. Выберите правильный:</p>
+
+        <!-- Сетка 2x2: 3 животных + 1 пустое место (?) -->
+        <div class="d-flex gap-2 mb-3 flex-wrap">
+            {% for choice in choices %}
+                {% if forloop.counter0 == correct_idx %}
+                <div class="border rounded p-2 text-center fw-bold"
+                     style="width:120px; height:80px;
+                            background: linear-gradient(135deg, #fff3cd, #ffc107);
+                            display:flex; align-items:center; justify-content:center; font-size:2.5rem;">
+                    ?
+                </div>
+                {% else %}
+                <div class="border rounded p-2 text-center"
+                     style="width:120px; height:80px;
+                            background: linear-gradient(135deg, #e0e0e0, #b0b0b0);
+                            display:flex; align-items:center; justify-content:center; font-size:2rem;">
+                    {{ choice }}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <label class="form-label">{{ form.puzzle_answer.label }}</label>
+        <div>
+            {% for radio in form.puzzle_answer %}
+            <div class="form-check">
+                {{ radio.tag }}
+                <label class="form-check-label" for="{{ radio.id_for_label }}">
+                    {{ radio.choice_label }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        {% if form.puzzle_answer.errors %}
+        <div class="text-danger mt-1">{{ form.puzzle_answer.errors }}</div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Отправить</button>
+</form>
+{% endblock %}

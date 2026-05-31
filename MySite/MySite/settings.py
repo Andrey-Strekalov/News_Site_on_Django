@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'ckeditor',
+    'ckeditor_uploader',
+    'captcha',
+    'cachalot',
     'news',
 ]
 
@@ -53,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'news.middleware.GeoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'MySite.urls'
@@ -136,6 +141,101 @@ MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
 MEDIA_URL= '/media/'
 
 INTERNAL_IPS = ["127.0.0.1"]
+
+# ─── CKEditor ────────────────────────────────────────────────────────────────
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'skin': 'moono',
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Strike'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink', 'Image', 'Table'],
+            ['TextColor', 'BGColor'],
+            ['Format', 'Font', 'FontSize'],
+            ['Maximize', 'Source'],
+            # MathJax — вставка LaTeX-формул (индивидуальное задание)
+            ['Mathjax'],
+        ],
+        'extraPlugins': 'mathjax',
+        'mathJaxLib': 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS_HTML',
+        'height': 300,
+        'width': '100%',
+    }
+}
+
+
+CAPTCHA_BACKGROUND_COLOR = '#cccccc'
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_arcs', 'captcha.helpers.noise_dots')
+CAPTCHA_LETTER_ROTATION = (-35, 35)
+
+# ─── Кэширование ─────────────────────────────────────────────────────────────
+CACHES = {
+
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'django_cache'),
+    },
+
+    'json_cache': {
+        'BACKEND': 'news.cache_serializer.JSONFileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'django_cache_json'),
+    },
+
+    'cachalot_redis': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/3',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
+        },
+    },
+    'shard1': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    },
+    'shard2': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/2',
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    },
+}
+
+
+CACHEOPS_REDIS = 'redis://127.0.0.1:6379/0'
+CACHEOPS = {
+
+    'news.News': {
+        'ops': 'all',
+        'cache_on_save': True,
+        'timeout': 60 * 15,
+    },
+
+    'news.Category': {
+        'ops': 'all',
+        'cache_on_save': True,
+        'timeout': 60 * 60,
+    },
+
+    'news.Comment': {
+        'ops': 'all',
+        'timeout': 60 * 5,
+    },
+}
+CACHEOPS_DEFAULTS = {'timeout': 60 * 15}
+
+
+CACHALOT_ENABLED = True
+
+CACHALOT_CACHE = 'cachalot_redis'
+
+# Гео-кэширование
+GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
 
 
 

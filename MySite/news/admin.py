@@ -1,11 +1,14 @@
 from django.contrib import admin
 from django import forms
 from django.core.exceptions import ValidationError
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 from .models import News, Category, Comment
 
 
 class NewsAdminForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorUploadingWidget())
+
     class Meta:
         model = News
         fields = '__all__'
