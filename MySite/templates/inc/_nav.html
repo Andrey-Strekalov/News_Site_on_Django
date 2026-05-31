@@ -12,9 +12,11 @@ navigation">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'home' %}">Главная</a>
                 </li>
+                {% if request.user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'add_news' %}">Добавить новость</a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>
